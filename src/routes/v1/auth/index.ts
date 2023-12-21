@@ -11,8 +11,32 @@ authRouter.post('/login', (req: Request, res: Response) => {
   res.send('User Login Route')
 })
 
-authRouter.post('/login-with-google', (req: Request, res: Response) => {
+authRouter.get('/google', (req: Request, res: Response) => {
   res.send('Login with google Route')
+})
+
+authRouter.get('/google/callback', (req: Request, res: Response) => {
+  res.send('Login with google Route')
+})
+
+authRouter.post('/logout', (req: Request, res: Response) => {
+  res.send('User Logout Route')
+})
+
+authRouter.post('/reset-password', (req: Request, res: Response) => {
+  res.send('User Reset Password Route')
+})
+
+authRouter.post('/send-verification-code', (req: Request, res: Response) => {
+  res.send('User Send verification code Route')
+})
+
+authRouter.post('/verify-email', (req: Request, res: Response) => {
+  res.send('User email verify Route')
+})
+
+authRouter.post('/logout', (req: Request, res: Response) => {
+  res.send('User Logout Route')
 })
 
 //* Admin
