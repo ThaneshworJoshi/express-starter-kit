@@ -1,5 +1,6 @@
 import { type Server } from 'http'
-import { configKeys } from '../config'
+
+import { configKeys } from '@src/config'
 
 const serverSetup = (server: Server) => {
   const startServer = () => {

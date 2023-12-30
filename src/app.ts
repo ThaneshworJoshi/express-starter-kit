@@ -1,14 +1,14 @@
-import express, { type Express, NextFunction, Request, Response } from 'express'
-import http from 'http'
-import dotenv from 'dotenv'
 import colors = require('colors.ts')
-import serverSetup from './server/server'
-import configureExpressApp from './server/express'
-// import connectToDatabase from "./database/mongodb/connection";
-import configureRoutes from './server/route'
-import AppError from './utils/appErrors'
-import { genericErrorHandler, notFoundErrorHandler } from './middlewares/errorMiddleware'
-import { gracefulShutdown } from './utils/shutdown'
+import dotenv from 'dotenv'
+import express, { type Express } from 'express'
+import http from 'http'
+
+import { genericErrorHandler, notFoundErrorHandler } from '@src/middlewares/errorMiddleware'
+import configureExpressApp from '@src/server/express'
+// import connectToDatabase from "@src/database/mongodb/connection";
+import configureRoutes from '@src/server/route'
+import serverSetup from '@src/server/server'
+import { gracefulShutdown } from '@src/utils/shutdown'
 
 dotenv.config()
 colors.enable()
@@ -25,6 +25,8 @@ configureExpressApp(app)
 // Configure routes
 configureRoutes(app)
 
+// Central Error Handler
+// The middleware functions notFoundErrorHandler and genericErrorHandler are registered to handle errors in the application.
 app.use([notFoundErrorHandler, genericErrorHandler])
 
 //* starting the server with server config

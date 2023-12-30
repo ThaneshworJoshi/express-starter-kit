@@ -1,4 +1,4 @@
-import { type Request, type Response, type NextFunction, type RequestHandler } from 'express'
+import { type NextFunction, type Request, type RequestHandler, type Response } from 'express'
 
 /**
  * Middleware function to handle asynchronous operations in Express.js controllers.

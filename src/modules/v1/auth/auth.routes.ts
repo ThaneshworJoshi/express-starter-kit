@@ -1,15 +1,16 @@
-import express, { type Router, type Request, type Response } from 'express'
+import express, { type Request, type Response, type Router } from 'express'
+
+import validate from '@src/middlewares/validateApiSchema'
+
+import { loginSchema } from './auth.api.schema'
+import { loginUser, registerUser } from './auth.controller'
 
 const authRouter: Router = express.Router()
 
 //* User
-authRouter.post('/register', (req: Request, res: Response) => {
-  res.send('User Auth Route')
-})
+authRouter.post('/register', registerUser)
 
-authRouter.post('/login', (req: Request, res: Response) => {
-  res.send('User Login Route')
-})
+authRouter.post('/login', validate(loginSchema), loginUser)
 
 authRouter.get('/google', (req: Request, res: Response) => {
   res.send('Login with google Route')

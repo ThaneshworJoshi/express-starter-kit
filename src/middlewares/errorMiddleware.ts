@@ -1,8 +1,9 @@
-import { type Request, type Response, type NextFunction } from 'express'
-import AppError from '../utils/appErrors'
-import HttpStatusCodes from '../constants/HTTPStatusCode'
-import mongoose from 'mongoose'
+import { type NextFunction, type Request, type Response } from 'express'
 import jwt from 'jsonwebtoken'
+import mongoose from 'mongoose'
+
+import HttpStatusCodes from '@src/constants/HTTPStatusCode'
+import AppError from '@src/utils/appErrors'
 
 const handleCastErrorDB = (err: mongoose.Error.CastError): AppError => {
   const message = `Invalid ${err.path}: ${err.value}.`
@@ -56,6 +57,11 @@ const sendErrorProd = (err: AppError, res: Response): any => {
   }
 }
 
+/**
+ * Generic Error Handling Middleware.
+ * This middleware handles all other types of errors that might occur during request processing.
+ * It sends back an appropriate error response, including the error message.
+ */
 export const genericErrorHandler = (error: AppError, _req: Request, res: Response, _next: NextFunction) => {
   error.statusCode = error.statusCode || HttpStatusCodes.INTERNAL_SERVER_ERROR
   error.status = error.status || 'error'
@@ -74,6 +80,11 @@ export const genericErrorHandler = (error: AppError, _req: Request, res: Respons
   }
 }
 
+/**
+ * Middleware to handle 404 Not Found errors.
+ * If a request reaches this middleware, it means no other routes matched the request URL.
+ * It sends back a 404 error response.
+ */
 export const notFoundErrorHandler = (req: Request, res: Response, next: NextFunction) => {
   const err = new Error('Not Found')
   // @ts-expect-error ---

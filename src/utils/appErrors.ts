@@ -14,7 +14,7 @@ class AppError extends Error {
     this.isOperational = true
     this.keyValue = details
 
-    Error.captureStackTrace(this, this.constructor)
+    // Error.captureStackTrace(this, this.constructor)
   }
 }
 

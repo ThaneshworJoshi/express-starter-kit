@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
-import configKeys from '../../config'
+
+import configKeys from '@src/config'
 
 const connectToDatabase = async (): Promise<void> => {
   try {

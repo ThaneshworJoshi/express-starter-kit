@@ -1,8 +1,9 @@
-import { Request, Response } from 'express'
-import { asyncHandler } from '@src/middlewares/asyncHandler'
-import HttpStatusCodes from '@src/constants/HTTPStatusCode'
 import axios from 'axios'
+import { Request, Response } from 'express'
+
 import configKeys from '@src/config'
+import HttpStatusCodes from '@src/constants/HTTPStatusCode'
+import { asyncHandler } from '@src/middlewares/asyncHandler'
 
 /**
  * @description Register a new user
