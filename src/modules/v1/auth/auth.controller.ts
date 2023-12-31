@@ -4,9 +4,8 @@ import { Request, Response } from 'express'
 import configKeys from '@src/config'
 import HttpStatusCodes from '@src/constants/HTTPStatusCode'
 import { asyncHandler } from '@src/middlewares/asyncHandler'
-import AppError from '@src/utils/appErrors'
 
-import * as authService from '../user/user.service'
+import * as authService from './auth.service'
 
 /**
  * @description Register a new user
@@ -15,21 +14,10 @@ import * as authService from '../user/user.service'
  */
 
 export const registerUser = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-  try {
-    //Create a new user
-    const newUser = await authService.createUser(req.body)
+  //Create a new user
+  const newUser = await authService.register(req.body)
 
-    res.status(HttpStatusCodes.CREATED).send({ success: true, message: 'User Registered Successfully', user: newUser })
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send({
-        success: false,
-        message: 'Failed to register user',
-        error: error.message,
-      })
-    }
-    throw error
-  }
+  res.status(HttpStatusCodes.CREATED).send({ success: true, message: 'User Registered Successfully', user: newUser })
 })
 
 /**
@@ -39,14 +27,15 @@ export const registerUser = asyncHandler(async (req: Request, res: Response): Pr
  */
 
 export const loginUser = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-  // TODO: Verify the user's credentials (e.g., username/password) against a database.
-  // If successful, create a JWT token and send it back to the client.
+  const { email, password } = req.body
+
+  const { accessToken, refreshToken } = await authService.login(email, password)
 
   res.status(HttpStatusCodes.OK).send({
     success: true,
     message: 'User Logged In Successfully',
-    accessToken: '',
-    refreshToken: '',
+    accessToken,
+    refreshToken,
   })
 })
 

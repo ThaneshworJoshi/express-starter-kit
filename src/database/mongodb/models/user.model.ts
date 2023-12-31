@@ -4,7 +4,7 @@ import mongoose, { Document, Model, Schema } from 'mongoose'
 import { IUserType } from '@src/types/user/UserType'
 
 interface IUser extends IUserType, Document {
-  verifyPassowrd(candidatePassword: string): Promise<boolean>
+  verifyPassword(candidatePassword: string): Promise<boolean>
 }
 
 const userSchema: Schema<IUser> = new Schema({
@@ -68,7 +68,7 @@ userSchema.pre<IUser>('save', async function (next) {
  * @param candidatePassword - The plain-text password provided by the user for verification.
  * @returns A Promise that resolves to a boolean indicating whether the provided password matches the stored hashed password.
  */
-userSchema.methods.verifyPassowrd = async function (candidatePassword: string): Promise<boolean> {
+userSchema.methods.verifyPassword = async function (candidatePassword: string): Promise<boolean> {
   return await bcrypt.compare(candidatePassword, this.password)
 }
 

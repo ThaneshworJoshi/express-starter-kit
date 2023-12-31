@@ -19,11 +19,11 @@ const createUser = async (user: IUserRegister) => {
  *
  * @param email - The email address of the user to retrieve.
  * @returns The user object associated with the specified email address.
- *           If no user is found, an appropriate message or value can be returned.
+ *           If no user is found, null value will be returned.
  */
-const getUserByEmail = (email: string) => {
-  //TODO : implemetation
-  return ''
+const getUserByEmail = async (email: string) => {
+  const user = await UserModel.findOne({ email })
+  return user
 }
 
 export { createUser, getUserByEmail }
