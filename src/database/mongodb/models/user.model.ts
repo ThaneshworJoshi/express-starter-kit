@@ -36,6 +36,9 @@ const userSchema: Schema<IUser> = new Schema({
     unique: true,
     sparse: true,
   },
+  otp: {
+    type: String,
+  },
   otpTries: {
     type: Number,
     default: 0,

@@ -4,6 +4,7 @@ export interface IUserType {
   password: string
   googleId: string
   googleAccessToken: string
+  otp: string
   otpTries: number
   isAccountSuspended: boolean
   isEmailConfirmed: boolean

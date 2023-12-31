@@ -20,6 +20,10 @@ export const configKeys = {
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ?? '',
 
   GOOGLE_REDIRECT_URL: process.env.GOOGLE_REDIRECT_URL ?? '',
+
+  EMAIL: process.env.EMAIL ?? '',
+
+  EMAIL_PASS: process.env.EMAIL_PASS ?? '',
 }
 
 export default configKeys

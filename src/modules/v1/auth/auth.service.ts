@@ -1,8 +1,9 @@
 import HttpStatusCodes from '@src/constants/HTTPStatusCode'
+import * as mailService from '@src/lib/mail'
 import * as tokenService from '@src/lib/token'
 import { IUserRegister } from '@src/types/user/UserInput'
 import AppError from '@src/utils/appErrors'
-import { removeKeysFromObject } from '@src/utils/common'
+import { generateSecureOTP } from '@src/utils/common'
 
 import * as userService from '../user/user.service'
 
@@ -18,9 +19,11 @@ const register = async (user: IUserRegister) => {
   if (existingUser) {
     throw new AppError('User already registered', HttpStatusCodes.CONFLICT)
   }
+  const otp = generateSecureOTP()
+  const newUser = await userService.createUser({ ...user, otp })
 
-  const newUser = await userService.createUser(user)
-  return removeKeysFromObject(newUser.toJSON(), ['password', '_id', '__v'])
+  await mailService.sendEmailVerificationOTP(user.email, otp)
+  return newUser
 }
 
 /**

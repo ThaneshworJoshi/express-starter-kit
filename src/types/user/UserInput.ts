@@ -7,4 +7,5 @@ export interface IUserRegister {
   email: string
   password: string
   confirmPassord: string
+  otp?: string
 }

@@ -1,3 +1,5 @@
+import crypto from 'crypto'
+
 type AnyObject = {
   [key: string]: any
 }
@@ -30,4 +32,29 @@ export const removeKeysFromObject = (obj: AnyObject, keys: string[]): AnyObject 
   })
 
   return newObj
+}
+
+/**
+ * Generate a unique and secure OTP (One-Time Password) using both digits and letters.
+ *
+ * @param length - Length of the OTP to be generated (default is 6 characters).
+ * @returns A unique and secure OTP.
+ */
+export const generateSecureOTP = (length: number = 6): string => {
+  // Define the characters that will be used to generate the OTP
+  const characters: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  const charactersLength: number = characters.length
+  let otp: string = ''
+
+  // Loop to generate the OTP using a cryptographically secure random number generator
+  for (let i = 0; i < length; i++) {
+    // Generate a random index within the range of characters
+    const randomIndex: number = crypto.randomInt(0, charactersLength)
+
+    // Append the character at the random index to the OTP string
+    otp += characters.charAt(randomIndex)
+  }
+
+  // Return the generated OTP
+  return otp
 }
