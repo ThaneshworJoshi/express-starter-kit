@@ -5,7 +5,6 @@ import rateLimit from 'express-rate-limit'
 import helmet from 'helmet'
 
 import configKeys from '@src/config'
-import { httpLogger } from '@src/lib/logger'
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -28,7 +27,7 @@ const limiter = rateLimit({
 const configureExpressApp = (app: Application) => {
   // Development logging
   if (configKeys.NODE_ENV === 'development') {
-    app.use(httpLogger)
+    // app.use(httpLogger)
   }
 
   app.set('trust proxy', true) // Enable trust for X-Forwarded-* headers

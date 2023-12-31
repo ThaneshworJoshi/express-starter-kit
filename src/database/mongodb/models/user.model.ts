@@ -1,23 +1,15 @@
 import bcrypt from 'bcryptjs'
 import mongoose, { Document, Model, Schema } from 'mongoose'
 
-export interface IUser extends Document {
-  username: string
-  email: string
-  password: string
-  googleId: string
-  googleAccessToken: string
-  otpTries: number
-  isAccountSuspended: boolean
-  isEmailConfirmed: boolean
+import { IUserType } from '@src/types/user/UserType'
 
+interface IUser extends IUserType, Document {
   verifyPassowrd(candidatePassword: string): Promise<boolean>
 }
 
 const userSchema: Schema<IUser> = new Schema({
   username: {
     type: String,
-    unique: true,
     trim: true,
   },
   email: {
@@ -80,6 +72,6 @@ userSchema.methods.verifyPassowrd = async function (candidatePassword: string): 
   return await bcrypt.compare(candidatePassword, this.password)
 }
 
-const User: Model<IUser> = mongoose.model<IUser>('User', userSchema)
+const UserModel: Model<IUser> = mongoose.model<IUser>('User', userSchema)
 
-export default User
+export default UserModel

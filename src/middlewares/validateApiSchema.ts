@@ -1,6 +1,7 @@
 import { type NextFunction, type Request, type Response } from 'express'
 import Joi, { type ValidationErrorItem } from 'joi'
 
+import HttpStatusCodes from '@src/constants/HTTPStatusCode'
 import AppError from '@src/utils/appErrors'
 
 interface Options {
@@ -48,7 +49,7 @@ export const validate =
       }
       const validationError = new AppError(
         'Validation failed',
-        400,
+        HttpStatusCodes.BAD_REQUEST,
         error.details.map((detail: ValidationErrorItem) => detail.message),
       )
       next(validationError)

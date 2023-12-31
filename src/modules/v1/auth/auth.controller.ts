@@ -4,6 +4,9 @@ import { Request, Response } from 'express'
 import configKeys from '@src/config'
 import HttpStatusCodes from '@src/constants/HTTPStatusCode'
 import { asyncHandler } from '@src/middlewares/asyncHandler'
+import AppError from '@src/utils/appErrors'
+
+import * as authService from '../user/user.service'
 
 /**
  * @description Register a new user
@@ -12,8 +15,21 @@ import { asyncHandler } from '@src/middlewares/asyncHandler'
  */
 
 export const registerUser = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-  // TODO: Implement the logic for user registration here.
-  res.status(HttpStatusCodes.CREATED).send({ success: true, message: 'User Registered Successfully' })
+  try {
+    //Create a new user
+    const newUser = await authService.createUser(req.body)
+
+    res.status(HttpStatusCodes.CREATED).send({ success: true, message: 'User Registered Successfully', user: newUser })
+  } catch (error: any) {
+    if (error instanceof AppError) {
+      res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send({
+        success: false,
+        message: 'Failed to register user',
+        error: error.message,
+      })
+    }
+    throw error
+  }
 })
 
 /**

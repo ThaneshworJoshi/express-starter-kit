@@ -11,7 +11,7 @@ const handleCastErrorDB = (err: mongoose.Error.CastError): AppError => {
 }
 
 const handleDuplicateFieldsDB = (err: any): AppError => {
-  const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0]
+  const value = err.errmsg.match(/{([^}]*)}/)?.[1]
   const message = `Duplicate field value: ${value}. Please use another value.`
   return new AppError(message, 400)
 }
@@ -20,6 +20,11 @@ const handleValidationErrorDB = (err: mongoose.Error.ValidationError): AppError 
   const errors = Object.values(err.errors).map((el: any) => el.message)
   const message = `Invalid input data. ${errors.join('. ')}`
   return new AppError(message, 400)
+}
+
+const handleBufferingTimeout = (): AppError => {
+  const message = 'Failed to process the request due to a database timeout. Please try again later.'
+  return new AppError(message, HttpStatusCodes.INTERNAL_SERVER_ERROR)
 }
 
 const handleJWTError = () => new AppError('Invalid token. Please log in again.', 401)
@@ -70,12 +75,14 @@ export const genericErrorHandler = (error: AppError, _req: Request, res: Respons
     sendErrorDev(error, res)
   } else if (process.env.NODE_ENV === 'production') {
     if (error instanceof mongoose.Error.CastError) error = handleCastErrorDB(error)
+    if (error instanceof mongoose.Error && error.message.includes('buffering timed out')) handleBufferingTimeout()
     // @ts-expect-error ---
-    if (error instanceof mongoose.Error && error.code === 11000) error = handleDuplicateFieldsDB(error)
+    if (error.name === 'MongoServerError' && String(error.code) === '11000') {
+      error = handleDuplicateFieldsDB(error)
+    }
     if (error instanceof mongoose.Error.ValidationError) error = handleValidationErrorDB(error)
     if (error instanceof jwt.JsonWebTokenError) error = handleJWTError()
     if (error instanceof jwt.TokenExpiredError) error = handleJWTExpiredError()
-
     sendErrorProd(error, res)
   }
 }

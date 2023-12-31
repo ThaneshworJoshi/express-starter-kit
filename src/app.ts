@@ -3,9 +3,9 @@ import dotenv from 'dotenv'
 import express, { type Express } from 'express'
 import http from 'http'
 
+import connectToDatabase from '@src/database/mongodb/connection'
 import { genericErrorHandler, notFoundErrorHandler } from '@src/middlewares/errorMiddleware'
 import configureExpressApp from '@src/server/express'
-// import connectToDatabase from "@src/database/mongodb/connection";
 import configureRoutes from '@src/server/route'
 import serverSetup from '@src/server/server'
 import { gracefulShutdown } from '@src/utils/shutdown'
@@ -17,7 +17,7 @@ const app: Express = express()
 const server = http.createServer(app)
 
 // Call the connectToDatabase function
-// connectToDatabase();
+connectToDatabase()
 
 // Configure middlewares
 configureExpressApp(app)
