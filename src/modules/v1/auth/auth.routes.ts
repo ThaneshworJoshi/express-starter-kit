@@ -2,8 +2,8 @@ import express, { type Request, type Response, type Router } from 'express'
 
 import validate from '@src/middlewares/validateApiSchema'
 
-import { loginSchema, registerSchema } from './auth.api.schema'
-import { loginUser, registerUser } from './auth.controller'
+import { emailVerificationSchema, loginSchema, registerSchema } from './auth.api.schema'
+import { loginUser, registerUser, verifyEmail } from './auth.controller'
 
 const authRouter: Router = express.Router()
 
@@ -32,9 +32,7 @@ authRouter.post('/send-verification-code', (req: Request, res: Response) => {
   res.send('User Send verification code Route')
 })
 
-authRouter.post('/verify-email', (req: Request, res: Response) => {
-  res.send('User email verify Route')
-})
+authRouter.post('/verify-email', validate(emailVerificationSchema), verifyEmail)
 
 authRouter.post('/logout', (req: Request, res: Response) => {
   res.send('User Logout Route')

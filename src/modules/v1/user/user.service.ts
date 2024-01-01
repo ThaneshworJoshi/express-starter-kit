@@ -11,7 +11,7 @@ import { removeKeysFromObject } from '@src/utils/common'
  */
 const createUser = async (user: IUserRegister) => {
   const createdUser = await UserModel.create(user)
-  return removeKeysFromObject(createdUser.toJSON(), ['password', '_id', '__v'])
+  return removeKeysFromObject(createdUser.toJSON(), ['password', '_id', '__v', 'otp'])
 }
 
 /**
@@ -26,4 +26,35 @@ const getUserByEmail = async (email: string) => {
   return user
 }
 
-export { createUser, getUserByEmail }
+/**
+ * @description Update the email confirmation status for a user in the database.
+ *
+ * @param email - The email address of the user to update.
+ * @returns The updated user object if successful; otherwise, returns null.
+ */
+const updateEmailConfirmationStatus = async (email: string) => {
+  const updatedUser = await UserModel.findOneAndUpdate(
+    { email },
+    { isEmailConfirmed: true, $unset: { otp: 1 } },
+
+    { new: true },
+  )
+  return updatedUser
+}
+
+/**
+ * @description Remove the OTP for a user in the database .
+ *
+ * @param email - The email address of the user to update.
+ * @returns The updated user object if successful; otherwise, returns null.
+ */
+const removeOtp = async (email: string) => {
+  const updatedUser = await UserModel.findOneAndUpdate(
+    { email },
+    { $unset: { otp: 1 } }, // Remove the OTP field from the user record
+    { new: true }, // Return the updated document
+  )
+  return updatedUser
+}
+
+export { createUser, getUserByEmail, removeOtp, updateEmailConfirmationStatus }

@@ -16,6 +16,15 @@ const confirmPassword = Joi.any()
 
 const refreshToken = Joi.string().required()
 
+const code = Joi.string()
+  .required()
+  .messages({
+    'any.required': 'Verification code is required',
+    'string.length': 'Verification code must be 6 characters long',
+  })
+  .length(6)
+  .message('Verification code must be 6 characters long')
+
 /* ==========================================================================
   -- User Login Schema
 ========================================================================== */
@@ -31,4 +40,12 @@ export const registerSchema = Joi.object({
   email,
   password,
   confirmPassword,
+})
+
+/* ==========================================================================
+  -- User Email Verification Schema
+========================================================================== */
+export const emailVerificationSchema = Joi.object({
+  email,
+  code,
 })

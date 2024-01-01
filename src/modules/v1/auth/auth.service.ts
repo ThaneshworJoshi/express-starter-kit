@@ -41,6 +41,10 @@ const login = async (email: string, password: string) => {
     throw new AppError('Invalid credentials', HttpStatusCodes.UNAUTHORIZED)
   }
 
+  if (!user.isEmailConfirmed) {
+    throw new AppError('Email not confirmed. Please verify your email to proceed.', HttpStatusCodes.BAD_REQUEST)
+  }
+
   // Generate JWT tokens (access token and refresh token)
   const { accessToken, refreshToken } = await tokenService.generateAuthTokens({ userId: user._id })
   return {
@@ -49,4 +53,22 @@ const login = async (email: string, password: string) => {
   }
 }
 
-export { login, register }
+/**
+ * @description Verify the email of a user by comparing the provided OTP code.
+ *
+ * @param email - The email address of the user.
+ * @param code - The OTP code to verify against the user's OTP.
+ * @returns True if the email is successfully verified; otherwise, returns false.
+ */
+const verifyEmail = async (email: string, code: string) => {
+  const user = await userService.getUserByEmail(email)
+
+  if (user?.otp === code) {
+    const updatedUser = await userService.updateEmailConfirmationStatus(email)
+    return updatedUser?.isEmailConfirmed
+  }
+
+  return false
+}
+
+export { login, register, verifyEmail }

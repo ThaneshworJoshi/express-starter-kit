@@ -148,13 +148,11 @@ export const sendVerificationCode = (req: Request, res: Response): void => {
  * @route POST /api/v1/auth/verify-email
  * @access Public
  */
-export const verifyEmail = (req: Request, res: Response): void => {
-  const verificationCode = req.body.code
-  // TODO: Logic to verify the user's email using the provided verification code.
-  // This could involve checking if the provided code matches the one associated with the user's email.
+export const verifyEmail = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { code, email } = req.body
 
-  if (verificationCode === 'expectedCode') {
-    // Replace 'expectedCode' with the actual logic to validate the code
+  const success = await authService.verifyEmail(email, code)
+  if (success) {
     res.status(HttpStatusCodes.OK).json({
       success: true,
       message: 'Email verified successfully',
@@ -165,4 +163,4 @@ export const verifyEmail = (req: Request, res: Response): void => {
       message: 'Invalid verification code',
     })
   }
-}
+})
