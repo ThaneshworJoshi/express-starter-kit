@@ -57,4 +57,90 @@ const removeOtp = async (email: string) => {
   return updatedUser
 }
 
-export { createUser, getUserByEmail, removeOtp, updateEmailConfirmationStatus }
+/**
+ * @description Increment the otpTries field for a user in the database.
+ *
+ * @param email - The email address of the user to update.
+ * @returns The updated user object if successful; otherwise, returns null.
+ */
+const incrementOtpTries = async (email: string) => {
+  const updatedUser = await UserModel.findOneAndUpdate(
+    { email },
+    { $inc: { otpTries: 1 } }, // Increment the otpTries field by 1
+    { new: true },
+  )
+  return updatedUser
+}
+
+// Maximum allowed OTP attempts for a user
+const MAX_OTP_TRIES = 5
+
+// Lockout duration in milliseconds (1 hour)
+const LOCKOUT_DURATION = 60 * 60 * 1000
+
+/**
+ * @description Verify OTP for a user based on their email address.
+ *
+ * @param email - The email address of the user.
+ * @param otp - The OTP code entered by the user.
+ * @returns - Returns true if OTP is valid; otherwise, false.
+ */
+const verifyOtp = async (email: string, otp: string) => {
+  // Retrieve user by email from the database
+  const user = await UserModel.findOne({ email })
+
+  // If user is not found, return false
+  if (!user) {
+    // Handle user not found
+    return false
+  }
+
+  // Get current date and time
+  const now = new Date() as any
+  const lastOtpAttemptAt = user.lastOtpAttemptAt ? new Date() : (user.lastOtpAttemptAt as unknown as Date)
+  // Check if user account is locked or within lockout duration
+  if (
+    user.isAccountSuspended ||
+    (user.lastOtpAttemptAt &&
+      now.getTime() - (lastOtpAttemptAt?.getTime ? lastOtpAttemptAt.getTime() : 0) < LOCKOUT_DURATION)
+  ) {
+    // Handle locked account or within lockout duration
+    return false
+  }
+
+  // If OTP does not match
+  if (user.otp !== otp) {
+    // Update last OTP attempt timestamp and increment OTP tries
+    user.lastOtpAttemptAt = now
+    await user.save()
+
+    // Increment OTP tries count
+    if (!user.otpTries) {
+      user.otpTries = 1
+    } else {
+      user.otpTries += 1
+    }
+
+    // If OTP tries exceed maximum allowed attempts, lock the account
+    if (user.otpTries >= MAX_OTP_TRIES) {
+      // user.isLocked = true
+      // user.lockedUntil = new Date(now.getTime() + LOCKOUT_DURATION)
+    }
+
+    // Save user changes
+    await user.save()
+
+    // Return false indicating OTP verification failed
+    return false
+  }
+
+  // If OTP matches, reset OTP tries count and last attempt timestamp
+  user.otpTries = 0
+  // user.lastOtpAttemptAt = null
+  await user.save()
+
+  // Return true indicating OTP verification succeeded
+  return true
+}
+
+export { createUser, getUserByEmail, incrementOtpTries, removeOtp, updateEmailConfirmationStatus, verifyOtp }

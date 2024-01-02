@@ -63,9 +63,34 @@ const login = async (email: string, password: string) => {
 const verifyEmail = async (email: string, code: string) => {
   const user = await userService.getUserByEmail(email)
 
+  if (!user) {
+    throw new AppError('User not found', HttpStatusCodes.NOT_FOUND)
+  }
+
+  const now = new Date()
+
+  if (user?.otpTries && user?.otpTries >= 5) {
+    user.isAccountSuspended = true
+    await user.save()
+
+    throw new AppError(
+      'Too many incorrect OTP attempts. Please try again after some time. ',
+      HttpStatusCodes.TOO_MANY_REQUESTS,
+    )
+  }
+
   if (user?.otp === code) {
-    const updatedUser = await userService.updateEmailConfirmationStatus(email)
-    return updatedUser?.isEmailConfirmed
+    user.isEmailConfirmed = true
+    user.otp = ''
+
+    const updatedUser = await user.save()
+
+    return true
+  }
+
+  if (user?.otpTries) {
+    user.otpTries = user.otpTries + 1
+    await userService.incrementOtpTries(email)
   }
 
   return false

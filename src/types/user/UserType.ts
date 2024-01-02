@@ -1,3 +1,5 @@
+import { Date } from 'mongoose'
+
 export interface IUserType {
   username: string
   email: string
@@ -6,6 +8,7 @@ export interface IUserType {
   googleAccessToken: string
   otp: string
   otpTries: number
+  lastOtpAttemptAt: Date
   isAccountSuspended: boolean
   isEmailConfirmed: boolean
 }

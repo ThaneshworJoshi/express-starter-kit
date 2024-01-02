@@ -43,6 +43,9 @@ const userSchema: Schema<IUser> = new Schema({
     type: Number,
     default: 0,
   },
+  lastOtpAttemptAt: {
+    type: Date,
+  },
   isAccountSuspended: {
     type: Boolean,
     default: false,
