@@ -58,3 +58,21 @@ export const generateSecureOTP = (length: number = 6): string => {
   // Return the generated OTP
   return otp
 }
+
+/**
+ * Generate a random token using crypto.randomBytes.
+ * @returns {string} - Random token string.
+ */
+export const generateRandomToken = (): string => {
+  try {
+    // Generate a random buffer of 20 bytes
+    const buffer = crypto.randomBytes(20)
+
+    // Convert the buffer to a hexadecimal string
+    const token = buffer.toString('hex')
+
+    return token
+  } catch (error) {
+    throw new Error('Failed to generate random token.')
+  }
+}
