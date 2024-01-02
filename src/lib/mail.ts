@@ -57,4 +57,24 @@ const sendEmailVerificationOTP = async (to: string, otp: string) => {
     throw new AppError('Failed to send email verification OTP', HttpStatusCodes.INTERNAL_SERVER_ERROR)
   }
 }
-export { sendEmail, sendEmailVerificationOTP }
+
+/**
+ * Send a password reset link to the specified email address.
+ *
+ * @param to - The recipient email address where the password reset link should be sent.
+ * @param resetLink - The password reset link to be included in the email.
+ */
+const sendPasswordResetLink = async (to: string, resetLink: string) => {
+  const subject = 'Password Reset Link'
+  const message = `Hello,\n\nPlease click on the following link to reset your password:\n${resetLink}\n\nIf you did not request this, please ignore this email.`
+
+  try {
+    // Sending the password reset link email
+    await sendEmail(to, subject, message)
+  } catch (error) {
+    // Handling errors if the email fails to send
+    throw new AppError('Failed to send password reset link', HttpStatusCodes.INTERNAL_SERVER_ERROR)
+  }
+}
+
+export { sendEmail, sendEmailVerificationOTP, sendPasswordResetLink }

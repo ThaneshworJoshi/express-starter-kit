@@ -3,8 +3,12 @@ import { Request, Response } from 'express'
 
 import configKeys from '@src/config'
 import HttpStatusCodes from '@src/constants/HTTPStatusCode'
+import * as mailService from '@src/lib/mail'
 import { asyncHandler } from '@src/middlewares/asyncHandler'
+import { TokenType } from '@src/types/token/TokenType'
 
+import * as tokenService from '../token/token.service'
+import * as userService from '../user/user.service'
 import * as authService from './auth.service'
 
 /**
@@ -114,18 +118,31 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response): Prom
 })
 
 /**
- * @description Reset password
- * @route GET /api/v1/auth/reset-password
+ * @description Send a password reset link to the specified email address
+ * @route POST /api/v1/auth/reset-password
  * @access Public
  */
-export const resetPasswordController = (req: Request, res: Response): void => {
-  //TODO:  Implement logic to handle the reset password request.
-  // For this example, let's assume the user sends an email to reset their password.
+export const resetPasswordController = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const userEmail = req.body.email
 
-  const userEmail = req.body.email // Assuming the email is sent in the request body
+  const user = await userService.getUserByEmail(userEmail)
 
-  res.status(HttpStatusCodes.OK).json({ message: `Password reset email sent to ${userEmail}` })
-}
+  //TODO: Prevent Timing Attack to find if user is registered or not
+  if (!user) {
+    res.status(HttpStatusCodes.BAD_REQUEST).json({
+      success: false,
+      message:
+        'If the provided email address is associated with an account, we have sent an email with instructions to reset your password.',
+    })
+  } else {
+    const { token } = await tokenService.saveToken(user?._id, TokenType.RESET_PASSWORD)
+    const passwordResetLink = configKeys.APP_URL + '/auth/reset-password?token=' + token
+
+    await mailService.sendPasswordResetLink(user.email, passwordResetLink)
+
+    res.status(HttpStatusCodes.OK).json({ success: true, message: `Password reset email sent to ${userEmail}` })
+  }
+})
 
 /**
  * @description Endpoint to send a verification code to the user's email.

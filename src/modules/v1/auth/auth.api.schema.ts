@@ -49,3 +49,10 @@ export const emailVerificationSchema = Joi.object({
   email,
   code,
 })
+
+/* ==========================================================================
+  -- Reset Password  Schema
+========================================================================== */
+export const resetPasswordSchema = Joi.object({
+  email,
+})

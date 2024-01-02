@@ -5,6 +5,8 @@ dotenv.config()
 export const configKeys = {
   PORT: process.env.PORT ?? '',
 
+  APP_URL: process.env.APP_URL ?? '',
+
   MONGO_DB_URL: process.env.DATABASE! ?? '',
 
   DB_NAME: process.env.DB_NAME ?? '',
