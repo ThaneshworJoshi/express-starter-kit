@@ -1,3 +1,5 @@
+import mongoose from 'mongoose'
+
 import UserModel from '@src/database/mongodb/models/user.model'
 import { IUserRegister } from '@src/types/user/UserInput'
 import { removeKeysFromObject } from '@src/utils/common'
@@ -57,4 +59,21 @@ const removeOtp = async (email: string) => {
   return updatedUser
 }
 
-export { createUser, getUserByEmail, removeOtp, updateEmailConfirmationStatus }
+/**
+ * @description Update a user's password in the database using the user ID.
+ *
+ * @param userId - The user ID of the user whose password needs to be updated.
+ * @param newPassword - The new password to set for the user.
+ * @returns Promise<void> - Returns a Promise that resolves once the password is updated successfully.
+ */
+const updateUserPassword = async (userId: mongoose.Types.ObjectId, newPassword: string): Promise<void> => {
+  try {
+    // Update the user's password in the database using the user ID
+    await UserModel.findByIdAndUpdate(userId, { password: newPassword }, { new: true }).exec()
+  } catch (error) {
+    console.error('Error updating user password:', error)
+    throw new Error('Failed to update user password.')
+  }
+}
+
+export { createUser, getUserByEmail, removeOtp, updateEmailConfirmationStatus, updateUserPassword }

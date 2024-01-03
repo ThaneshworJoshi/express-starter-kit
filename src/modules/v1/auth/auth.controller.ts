@@ -145,6 +145,44 @@ export const resetPasswordController = asyncHandler(async (req: Request, res: Re
 })
 
 /**
+ * @description Update user password using the provided token
+ * @route POST /api/v1/auth/update-password
+ * @access Public
+ */
+export const updatePasswordController = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { token, password } = req.body
+
+  try {
+    const tokenData = await tokenService.validateToken(token, TokenType.RESET_PASSWORD)
+
+    if (!tokenData) {
+      // Token is invalid or expired
+      res.status(HttpStatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: 'Invalid or expired token. Please request a new password reset link.',
+      })
+    } else {
+      // Token is valid, update the user's password
+      const userId = tokenData.userId
+      await userService.updateUserPassword(userId, password)
+
+      await tokenService.invalidateToken(token, TokenType.RESET_PASSWORD)
+
+      res.status(HttpStatusCodes.OK).json({
+        success: true,
+        message: 'Password updated successfully.',
+      })
+    }
+  } catch (error) {
+    console.error('Error updating password:', error)
+    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: 'Failed to update password. Please try again later.',
+    })
+  }
+})
+
+/**
  * @description Endpoint to send a verification code to the user's email.
  * @route POST /api/v1/auth/send-verification-code
  * @access Public
