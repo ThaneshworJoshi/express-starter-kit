@@ -129,8 +129,8 @@ export const resetPasswordController = asyncHandler(async (req: Request, res: Re
 
   //TODO: Prevent Timing Attack to find if user is registered or not
   if (!user) {
-    res.status(HttpStatusCodes.BAD_REQUEST).json({
-      success: false,
+    res.status(HttpStatusCodes.OK).json({
+      success: true,
       message:
         'If the provided email address is associated with an account, we have sent an email with instructions to reset your password.',
     })
@@ -140,7 +140,11 @@ export const resetPasswordController = asyncHandler(async (req: Request, res: Re
 
     await mailService.sendPasswordResetLink(user.email, passwordResetLink)
 
-    res.status(HttpStatusCodes.OK).json({ success: true, message: `Password reset email sent to ${userEmail}` })
+    res.status(HttpStatusCodes.OK).json({
+      success: true,
+      message:
+        'If the provided email address is associated with an account, we have sent an email with instructions to reset your password.',
+    })
   }
 })
 
