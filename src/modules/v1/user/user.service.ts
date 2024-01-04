@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs'
 import mongoose from 'mongoose'
 
 import UserModel from '@src/database/mongodb/models/user.model'
@@ -68,8 +69,9 @@ const removeOtp = async (email: string) => {
  */
 const updateUserPassword = async (userId: mongoose.Types.ObjectId, newPassword: string): Promise<void> => {
   try {
+    const password = await bcrypt.hash(newPassword, 10)
     // Update the user's password in the database using the user ID
-    await UserModel.findByIdAndUpdate(userId, { password: newPassword }, { new: true }).exec()
+    await UserModel.findByIdAndUpdate(userId, { password }).exec()
   } catch (error) {
     console.error('Error updating user password:', error)
     throw new Error('Failed to update user password.')
